@@ -17,8 +17,15 @@ Java 17
 Maven
 
 Docker
-
-Postman
+Build the application
+    mvn clean
+    mvn install -DskipTests
+Build the docker image
+    docker build -t order_management .
+run the docker image
+  docker run -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:mysql://host.docker.internal:3306/order_managment_system? 
+useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull" -e SPRING_DATASOURCE_USERNAME=<your_username> -e SPRING_DATASOURCE_PASSWORD=<your_password> my-spring-app
+  or you can use docker-compose.yml, which contain both mysql image and application image, then run "docker-compose up", which run the mysql in docker
 
 Repository Duplication
 
