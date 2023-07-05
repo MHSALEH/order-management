@@ -17,30 +17,39 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-
+  // Repository to manage user data.
   private final UserRepository repository;
 
+  // UserDetailsService is an interface used to retrieve user-related data.
   @Bean
   public UserDetailsService userDetailsService() {
+    //load user-specific data by username.
     return username -> repository.findByEmail(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }
 
+  // An AuthenticationProvider is responsible for processing a specific type of Authentication request.
   @Bean
   public AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    // Set UserDetailsService for the authentication provider.
     authProvider.setUserDetailsService(userDetailsService());
+    // Set password encoder, to hash the passwords.
     authProvider.setPasswordEncoder(passwordEncoder());
     return authProvider;
   }
 
+  // An AuthenticationManager authenticates each authentication request.
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    // Returns the AuthenticationManager from the passed AuthenticationConfiguration.
     return config.getAuthenticationManager();
   }
 
+  // PasswordEncoder is an interface that specifies a cryptographic hashing strategy for passwords.
   @Bean
   public PasswordEncoder passwordEncoder() {
+    // BCryptPasswordEncoder implements PasswordEncoder, it hashes the passwords using BCrypt.
     return new BCryptPasswordEncoder();
   }
 

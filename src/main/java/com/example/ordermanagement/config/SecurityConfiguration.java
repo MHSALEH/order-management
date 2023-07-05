@@ -22,15 +22,20 @@ import static com.example.ordermanagement.user.Role.CUSTOMER;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
+  // The authentication filter for JWT.
   private final JwtAuthenticationFilter jwtAuthFilter;
+  // The AuthenticationProvider which will authenticate the user's credentials.
   private final AuthenticationProvider authenticationProvider;
 
-
+  // Define the security filter chain which specifies the security settings.
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       return http
+              // Disabling CSRF protection as we're using JWT for stateless authentication.
               .csrf(AbstractHttpConfigurer::disable)
+              // Disabling CORS support.
               .cors(AbstractHttpConfigurer::disable)
+              // Define authorization requests.
               .authorizeHttpRequests(auth -> auth
                       .requestMatchers("/api/v1/auth/**","/swagger-ui/**", "/v3/api-docs/**").permitAll()
                       .requestMatchers(HttpMethod.GET,"/api/v1/products").permitAll()
@@ -53,8 +58,11 @@ public class SecurityConfiguration {
                       .requestMatchers("/api/v1/customers/{customerId}/orders/{orderId}/products/{productId}").hasAnyAuthority(CUSTOMER.name(), ADMIN.name())
 
                       .anyRequest().authenticated())
+              // Define the session management strategy - here we're going for stateless session creation (no session).
               .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+              // Set the AuthenticationProvider to be used.
               .authenticationProvider(authenticationProvider)
+              // Add the JWT authentication filter before the UsernamePasswordAuthenticationFilter.
               .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
               .build();
   }

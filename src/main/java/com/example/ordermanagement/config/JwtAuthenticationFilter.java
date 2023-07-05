@@ -20,10 +20,14 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+// Filter that handles the JWT (Json Web Token) authentication.
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+  // The JwtService is responsible for the handling of JWT.
   private final JwtService jwtService;
+  // The UserDetailsService is used to retrieve user-related data.
   private final UserDetailsService userDetailsService;
+  // The TokenRepository is used to retrieve token-related data.
   private final TokenRepository tokenRepository;
 
   @Override
@@ -32,16 +36,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain
   ) throws ServletException, IOException {
-
-
-
-
+    // Get the Authorization header from the request.
     final String authHeader = request.getHeader("Authorization");
     System.out.println(authHeader);
 
     final String jwt;
     final String userEmail;
-
+    // If the Authorization header is null or does not start with "Bearer ", continue with the next filter in the chain.
     if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
       filterChain.doFilter(request, response);
       return;
@@ -55,13 +56,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     System.out.println(userEmail);
 
     if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+      // Load user-specific data.
       UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
       System.out.println(userDetails);
-      System.out.println("authorities:");
       System.out.println(userDetails.getAuthorities());
+      // Check if the token is valid.
       var isTokenValid = tokenRepository.findByToken(jwt)
           .map(t -> !t.isExpired() && !t.isRevoked())
           .orElse(false);
+      // If the JWT is valid, create an Authentication and set it in the SecurityContext.
       if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
             userDetails,
@@ -72,9 +75,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new WebAuthenticationDetailsSource().buildDetails(request)
         );
         SecurityContextHolder.getContext().setAuthentication(authToken);
-        System.out.println("valiiiiiiiiiiiiiid");
       }
     }
+    // Continue with the next filter in the chain.
     filterChain.doFilter(request, response);
   }
 }
