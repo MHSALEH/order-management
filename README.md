@@ -45,5 +45,3 @@ Include this token with the "Bearer " prefix in the Authorization header for all
 Code Documentation
 
 The code adheres to Java's best practices, which means each method, class, and module is documented with comments and functionality descriptions.
-
-Contributing
