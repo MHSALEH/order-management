@@ -10,26 +10,31 @@ Initiation Steps
 
 Follow these guidelines to have a copy of the program for development and testing purposes on your local computer.
 
-Requirements
+- Requirements
 
-Java 17
+- Java 17
 
-Maven
+- Maven
 
-Docker
+- Docker
+  
 Build the application
-    mvn clean
-    mvn install -DskipTests
+
+   -  mvn clean
+   -  mvn install -DskipTests
+     
 Build the docker image
-    docker build -t order_management .
+   -  docker build -t order_management .
+     
 run the docker image
-  docker run -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:mysql://host.docker.internal:3306/order_managment_system? 
+
+- docker run -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:mysql://host.docker.internal:3306/order-management? 
 useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull" -e SPRING_DATASOURCE_USERNAME=<your_username> -e SPRING_DATASOURCE_PASSWORD=<your_password> my-spring-app
   or you can use docker-compose.yml, which contain both mysql image and application image, then run "docker-compose up", which run the mysql in docker
 
 Repository Duplication
 
-Run these commands to copy the repository and move into the directory:
+- Run these commands to copy the repository and move into the directory:
 
 git clone https://github.com/MHSALEH/order-management.git
 
